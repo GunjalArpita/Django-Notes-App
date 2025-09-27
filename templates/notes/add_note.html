@@ -4,34 +4,86 @@
     <title>Add Note</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-<body class="bg-light">
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-6">
-            <div class="card shadow-lg border-0">
-                <div class="card-header bg-success text-white text-center">
-                    <h2 class="mb-0">Add Note</h2>
-                </div>
-                <div class="card-body">
-                    <form method="post">
-                        {% csrf_token %}
-                        <div class="mb-3">
-                            <label class="form-label">Title</label>
-                            <input type="text" name="title" class="form-control" placeholder="Enter title" required>
+<body style="background: linear-gradient(135deg, #f8ffae 0%, #43c6ac 100%); min-height:100vh; display:flex; align-items:center; justify-content:center;">
+    <div class="container d-flex justify-content-center align-items-center" style="min-height: 80vh;">
+        <div class="row w-100 justify-content-center">
+            <div class="col-md-7 col-lg-5">
+                <div class="card shadow-lg border-0" style="border-radius: 1.5rem; background: rgba(255,255,255,0.97);">
+                    <div class="card-body py-5">
+                        <div class="text-center mb-4">
+                            <span style="font-size:2.5em; color:#43c6ac;">📝</span>
+                            <h2 class="fw-bold mb-1" style="color:#43c6ac; letter-spacing:1px;">Add Note</h2>
+                            <span style="font-size:1.5em; color:#43c6ac;"></span>
                         </div>
-                        <div class="mb-3">
-                            <label class="form-label">Content</label>
-                            <textarea name="content" class="form-control" rows="4" placeholder="Enter content" required></textarea>
-                        </div>
-                        <div class="d-flex justify-content-between">
-                            <button type="submit" class="btn btn-success">Save</button>
-                            <a href="{% url 'notes_list' %}" class="btn btn-secondary">Back</a>
-                        </div>
-                    </form>
+                        <form method="post" autocomplete="off" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <div class="mb-4">
+                                <label class="form-label fw-semibold" style="font-size:1.1em;">Title <span style="font-size:1.2em;">🏷️</span></label>
+                                <input type="text" name="title" class="form-control form-control-lg text-center" placeholder="Enter title " required style="border-radius:1rem;">
+                            </div>
+                            <div class="mb-4">
+                                <label class="form-label fw-semibold" style="font-size:1.1em;">Content <span style="font-size:1.2em;">🗒️</span></label>
+                                <div class="input-group">
+                                    <textarea id="contentInput" name="content" class="form-control form-control-lg text-center" rows="4" placeholder="Enter content" required style="border-radius:1rem;"></textarea>
+                                    <button type="button" class="btn btn-outline-primary" id="micBtn" title="Speak your note" style="border-radius:1rem;">
+                                        <span style="font-size:1.3em;">🎤</span>
+                                    </button>
+                                </div>
+                                <small class="text-muted">You can type ✍️ or use speech 🎤 to add your note.</small>
+                            </div>
+                            <div class="mb-4">
+                                <label class="form-label fw-semibold" style="font-size:1.1em;">Attach Files <span style="font-size:1.2em;">📎</span></label>
+                                <input type="file" name="files" multiple class="form-control form-control-lg" style="border-radius:1rem;">
+                                <small class="text-muted">You can upload documents, photos, or other files.</small>
+                            </div>
+                            <script>
+                            let recognizing = false;
+                            let recognition;
+                            const micBtn = document.getElementById('micBtn');
+                            const contentInput = document.getElementById('contentInput');
+                            if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+                                const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                                recognition = new SpeechRecognition();
+                                recognition.continuous = false;
+                                recognition.interimResults = false;
+                                recognition.lang = 'en-US';
+                                recognition.onresult = function(event) {
+                                    const transcript = event.results[0][0].transcript;
+                                    contentInput.value += (contentInput.value ? ' ' : '') + transcript;
+                                };
+                                recognition.onend = function() {
+                                    recognizing = false;
+                                    micBtn.classList.remove('active');
+                                    micBtn.innerHTML = '<span style="font-size:1.3em;">🎤</span>';
+                                };
+                                micBtn.onclick = function() {
+                                    if (!recognizing) {
+                                        recognition.start();
+                                        recognizing = true;
+                                        micBtn.classList.add('active');
+                                        micBtn.innerHTML = '<span style="font-size:1.3em;">🛑</span>';
+                                    } else {
+                                        recognition.stop();
+                                    }
+                                };
+                            } else {
+                                micBtn.disabled = true;
+                                micBtn.title = 'Speech recognition not supported in this browser.';
+                            }
+                            </script>
+                            <div class="d-flex justify-content-between align-items-center mt-4">
+                                <button type="submit" class="btn w-50 py-2 fw-bold" style="background: linear-gradient(90deg, #43c6ac 0%, #f8ffae 100%); color:#fff; border:none; border-radius:1rem; font-size:1.1em;">
+                                    Save <span style="font-size:1.2em;"></span>
+                                </button>
+                                <a href="{% url 'notes_list' %}" class="btn btn-secondary w-25 py-2 ms-2" style="border-radius:1rem; font-size:1.1em;">
+                                    Back <span style="font-size:1.2em;">🔙</span>
+                                </a>
+                            </div>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
 </body>
 </html>

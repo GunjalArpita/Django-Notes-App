@@ -4,7 +4,7 @@
     <title>Your Notes</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-<body style="background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%);">
+<body id="mainBody" style="background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%);">
 <div class="container-fluid py-5">
     <div class="row justify-content-center">
         <div class="col-lg-10">
@@ -13,7 +13,8 @@
                     <h1 class="display-4 fw-bold mb-0" style="color:#2d2d2d;"><span style="font-size:1.3em;">📝</span> Your Notes</h1>
                 </div>
                 <div class="col-md-4 text-end">
-                    <a href="{% url 'secrets_auth' %}" class="btn btn-dark btn-lg px-4 py-2" style="font-size:1.3em;"><span style="font-size:1.4em;">🔒</span> Secrets are here</a>
+                    <a href="{% url 'secrets_auth' %}" class="btn btn-dark btn-lg px-4 py-2 me-2" style="font-size:1.3em;"><span style="font-size:1.4em;">🔒</span> Secrets are here</a>
+                    <button id="darkModeToggle" class="btn btn-outline-dark btn-lg px-3 py-2" style="font-size:1.3em;" title="Toggle dark mode"><span id="darkModeIcon">🌙</span></button>
                 </div>
             </div>
             <div class="card shadow-lg border-0">
@@ -165,6 +166,98 @@
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script>
+    // Dark mode logic
+    document.addEventListener('DOMContentLoaded', function() {
+        const darkModeToggle = document.getElementById('darkModeToggle');
+        const darkModeIcon = document.getElementById('darkModeIcon');
+        const mainBody = document.getElementById('mainBody');
+        const notesHeading = document.querySelector('.display-4');
+        function setDarkMode(on) {
+            // Always reset card, button, and title styles before applying mode-specific styles
+            document.querySelectorAll('.card').forEach(card => {
+                card.style.backgroundColor = '';
+                card.classList.remove('border-secondary');
+            });
+            document.querySelectorAll('.card-header').forEach(h => h.classList.remove('bg-dark'));
+            document.querySelectorAll('.card-footer').forEach(f => f.classList.remove('bg-dark'));
+            document.querySelectorAll('.btn-outline-warning').forEach(btn => {
+                btn.classList.remove('btn-warning');
+                btn.style.color = '';
+            });
+            document.querySelectorAll('.btn-outline-danger').forEach(btn => {
+                btn.classList.remove('btn-danger');
+                btn.style.color = '';
+            });
+            document.querySelectorAll('.card-title').forEach(title => {
+                title.classList.add('text-primary');
+                title.style.color = '';
+            });
+            if (notesHeading) {
+                notesHeading.style.color = '';
+            }
+            if (on) {
+                mainBody.classList.add('dark-mode');
+                mainBody.style.background = 'linear-gradient(135deg, #444 0%, #495057 100%)';
+                darkModeIcon.textContent = '☀️';
+                document.querySelectorAll('.card').forEach(card => {
+                    card.style.backgroundColor = '#e0e0e0';
+                    card.classList.remove('text-white');
+                    card.classList.add('border-secondary');
+                });
+                document.querySelectorAll('.card-header').forEach(h => h.classList.add('bg-dark'));
+                document.querySelectorAll('.card-footer').forEach(f => f.classList.add('bg-dark'));
+                document.querySelectorAll('.btn-outline-warning').forEach(btn => {
+                    btn.classList.add('btn-warning');
+                    btn.style.color = '#fff';
+                });
+                document.querySelectorAll('.btn-outline-danger').forEach(btn => {
+                    btn.classList.add('btn-danger');
+                    btn.style.color = '#fff';
+                });
+                document.querySelectorAll('.card-title').forEach(title => {
+                    title.classList.remove('text-primary');
+                    title.style.color = '#ffc107';
+                });
+                if (notesHeading) {
+                    notesHeading.style.color = '#ffc107';
+                }
+            } else {
+                mainBody.classList.remove('dark-mode');
+                mainBody.style.background = 'linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%)';
+                darkModeIcon.textContent = '🌙';
+                    document.querySelectorAll('.card').forEach(card => {
+                        card.style.setProperty('background-color', 'transparent', 'important'); // Remove background from card itself
+                    });
+                    document.querySelectorAll('.card-body').forEach(body => {
+                        body.style.setProperty('background', 'linear-gradient(135deg, #e3e6f5 0%, #f8fafc 100%)', 'important'); // Soft gradient for card-body
+                        body.style.setProperty('border-radius', '16px', 'important'); // Rounded corners for card-body
+                        body.style.setProperty('box-shadow', '0 2px 8px rgba(0,0,0,0.04)', 'important'); // Subtle shadow for card-body
+                    });
+                document.querySelectorAll('.card-title').forEach(title => {
+                    title.style.color = '#212529';
+                });
+                if (notesHeading) {
+                    notesHeading.style.color = '#ffc107';
+                }
+            }
+        }
+        function getDarkMode() {
+            return localStorage.getItem('darkMode') === 'on';
+        }
+        function toggleDarkMode() {
+            const on = !getDarkMode();
+            localStorage.setItem('darkMode', on ? 'on' : 'off');
+            setDarkMode(on);
+        }
+        if (darkModeToggle) {
+            darkModeToggle.addEventListener('click', toggleDarkMode);
+            // Default mode is light
+            localStorage.setItem('darkMode', 'off');
+            setDarkMode(false);
+        }
+    });
+</script>
+<script>
         var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
         var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
             return new bootstrap.Tooltip(tooltipTriggerEl);
@@ -194,20 +287,53 @@
             }
         }
 
-        function showCopyToast() {
-            var toast = document.createElement('div');
-            toast.className = 'toast align-items-center text-bg-info border-0 position-fixed start-50 translate-middle-x mt-4';
-            toast.style.top = '0';
-            toast.style.zIndex = '9999';
-            toast.role = 'alert';
-            toast.ariaLive = 'assertive';
-            toast.ariaAtomic = 'true';
-            toast.innerHTML = '<div class="d-flex"><div class="toast-body">Note copied!</div><button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button></div>';
-            document.body.appendChild(toast);
-            var bsToast = new bootstrap.Toast(toast, { delay: 1500 });
-            bsToast.show();
-            setTimeout(function() { document.body.removeChild(toast); }, 1700);
-        }
-</script>
-</body>
-</html>
+            if (on) {
+                mainBody.style.background = 'linear-gradient(135deg, #444 0%, #495057 100%)'; // Light black gradient for dark mode
+                mainBody.classList.add('dark-mode');
+                darkModeIcon.textContent = '☀️';
+                document.querySelectorAll('.card').forEach(card => {
+                    card.style.backgroundColor = '#e0e0e0'; // Lighter grey card background in dark mode
+                    card.classList.remove('text-white');
+                    card.classList.add('border-secondary');
+                });
+                document.querySelectorAll('.card-header').forEach(h => h.classList.add('bg-dark'));
+                document.querySelectorAll('.card-footer').forEach(f => f.classList.add('bg-dark'));
+                document.querySelectorAll('.btn-outline-warning').forEach(btn => {
+                    btn.classList.add('btn-warning');
+                    btn.style.color = '#fff'; // Light text for edit button
+                });
+                document.querySelectorAll('.btn-outline-danger').forEach(btn => {
+                    btn.classList.add('btn-danger');
+                    btn.style.color = '#fff'; // Light text for delete button
+                });
+                // Make note titles and heading visible in dark mode
+                document.querySelectorAll('.card-title').forEach(title => {
+                    title.classList.remove('text-primary');
+                    title.style.color = '#ffc107'; // Attractive yellow for note titles in dark mode
+                });
+                if (notesHeading) {
+                    notesHeading.style.color = '#ffc107'; // Attractive yellow for visibility in dark mode
+                }
+            } else {
+                // Only deactivate dark mode styles, do not change light mode styles
+                mainBody.style.background = 'linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%)'; // Light blue gradient for light mode
+                mainBody.classList.remove('dark-mode');
+                darkModeIcon.textContent = '🌙';
+                document.querySelectorAll('.card-header').forEach(h => h.classList.remove('bg-dark'));
+                document.querySelectorAll('.card-footer').forEach(f => f.classList.remove('bg-dark'));
+                document.querySelectorAll('.btn-outline-warning').forEach(btn => {
+                    btn.classList.remove('btn-warning');
+                    btn.style.color = '';
+                });
+                document.querySelectorAll('.btn-outline-danger').forEach(btn => {
+                    btn.classList.remove('btn-danger');
+                    btn.style.color = '';
+                });
+                document.querySelectorAll('.card-title').forEach(title => {
+                    title.classList.add('text-primary');
+                    title.style.color = '';
+                });
+                if (notesHeading) {
+                    notesHeading.style.color = '';
+                }
+            }

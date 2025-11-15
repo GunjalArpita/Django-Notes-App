@@ -22,6 +22,9 @@
                         {% if form.errors %}
                             <p class="text-danger mt-3 text-center" style="border-radius:1rem;">❌ Invalid username or password.</p>
                         {% endif %}
+                        <div class="text-center mt-3">
+                            <p>Don't have an account? <a href="{% url 'register' %}" class="text-primary">Register here</a>.</p>
+                        </div>
                     </div>
                 </div>
             </div>

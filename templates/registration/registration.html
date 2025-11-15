@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container-fluid d-flex justify-content-center align-items-center" style="min-height: 100vh; background: linear-gradient(135deg, #fbc2eb 0%, #a6c1ee 100%);">
+    <div class="row w-100 justify-content-center">
+        <div class="col-md-6 col-lg-4">
+            <div class="card shadow-lg border-0" style="border-radius: 2rem; background: rgba(255, 255, 255, 0.95);">
+                <div class="card-body py-5">
+                    <div class="text-center mb-4">
+                        <span style="font-size:3.5em; color:#6c63ff;">📝</span>
+                        <h2 class="fw-bold mb-2" style="color:#6c63ff; letter-spacing:1px;">Welcome to Notes App</h2>
+                        <p class="text-muted" style="font-size: 0.9em;">Create an account to start organizing your notes effortlessly.</p>
+                    </div>
+                    <form method="post" autocomplete="off">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <input type="text" name="username" class="form-control rounded-pill" placeholder="Username" required>
+                        </div>
+                        <div class="mb-3">
+                            <input type="password" name="password1" class="form-control rounded-pill" placeholder="Password" required>
+                        </div>
+                        <div class="mb-3">
+                            <input type="password" name="password2" class="form-control rounded-pill" placeholder="Confirm Password" required>
+                        </div>
+                        <button type="submit" class="btn w-100 py-2 fw-bold" style="background: linear-gradient(90deg, #6c63ff 0%, #a6c1ee 100%); color:#fff; border:none; border-radius:2rem; font-size:1.2em; box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);">Register <span style="font-size:1.2em;">➡️</span></button>
+                    </form>
+                    {% if error %}
+                        <p class="text-danger mt-3 text-center" style="border-radius:1rem;">❌ {{ error }}</p>
+                    {% endif %}
+                    {% if error %}
+                                <div class="alert alert-danger" role="alert">
+                                    {{ error }}
+                                </div>
+                            {% endif %}
+                            {% for field in form %}
+                                {% for error in field.errors %}
+                                    <div class="alert alert-danger" role="alert">
+                                        {{ error }}
+                                    </div>
+                                {% endfor %}
+                            {% endfor %}
+                    <div class="text-center mt-4">
+                        <p>Already have an account? <a href="{% url 'login' %}" class="text-primary fw-bold">Login here</a>.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

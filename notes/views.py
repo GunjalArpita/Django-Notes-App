@@ -8,6 +8,11 @@ from django.db.models import Q
 from django.contrib.auth.decorators import login_required
 from .models import Note, NoteFile
 from .forms import NoteForm, NoteFileForm
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.models import User
+import logging
+
+logger = logging.getLogger(__name__)
 
 @login_required
 def move_to_secret(request, note_id):
@@ -171,3 +176,27 @@ def secrets_notes(request):
     secret_notes = Note.objects.filter(user=request.user, is_secret=True)
     move_message = request.session.pop('move_message', None)
     return render(request, 'notes/secrets_notes.html', {'secret_notes': secret_notes, 'move_message': move_message})
+
+def register(request):
+    if request.method == 'POST':
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            try:
+                form.save()
+                return redirect('login')
+            except Exception as e:
+                error_message = f"Error during registration: {e}"
+                return render(request, 'registration/registration.html', {'form': form, 'error': error_message})
+        else:
+            error_message = "Form validation failed. Please correct the errors below."
+            return render(request, 'registration/registration.html', {'form': form, 'error': error_message})
+    else:
+        form = UserCreationForm()
+    return render(request, 'registration/registration.html', {'form': form})
+
+@login_required
+def profile(request):
+    return render(request, 'notes/profile.html', {
+        'username': request.user.username,
+        'email': request.user.email,
+    })

@@ -6,9 +6,18 @@
     <title>{% block title %}Notes App{% endblock %}</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+    </style>
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <nav class="navbar navbar-expand-lg bg-body-tertiary">
         <div class="container-fluid">
             <a class="navbar-brand mx-auto fw-bold" href="/" style="font-size: 1.5rem; color: #6c63ff;">Notes App</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -27,8 +36,11 @@
                                 </button>
                             </div>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="/logout/">Logout</a>
+                        <li class="nav-item d-flex align-items-center">
+                            <form method="post" action="{% url 'logout' %}" class="m-0 p-0">
+                                {% csrf_token %}
+                                <button type="submit" class="nav-link bg-transparent border-0">Logout</button>
+                            </form>
                         </li>
                     {% else %}
                         <li class="nav-item">
@@ -43,11 +55,46 @@
         </div>
     </nav>
 
-    <div class="container mt-4">
+    <div class="container mt-4 mb-5">
+        {% block back_button %}{% endblock %}
         {% block content %}
         {% endblock %}
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', (event) => {
+            const htmlElement = document.documentElement;
+            const themeToggleBtn = document.getElementById('darkModeToggle');
+            const themeIcon = themeToggleBtn ? themeToggleBtn.querySelector('i') : null;
+
+            // Load theme from localStorage
+            const currentTheme = localStorage.getItem('theme') || 'light';
+            htmlElement.setAttribute('data-bs-theme', currentTheme);
+            
+            if (currentTheme === 'dark' && themeIcon) {
+                themeIcon.classList.remove('bi-moon');
+                themeIcon.classList.add('bi-sun');
+            }
+
+            if (themeToggleBtn) {
+                themeToggleBtn.addEventListener('click', () => {
+                    const currentTheme = htmlElement.getAttribute('data-bs-theme');
+                    const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+                    
+                    htmlElement.setAttribute('data-bs-theme', newTheme);
+                    localStorage.setItem('theme', newTheme);
+
+                    if (newTheme === 'dark') {
+                        themeIcon.classList.remove('bi-moon');
+                        themeIcon.classList.add('bi-sun');
+                    } else {
+                        themeIcon.classList.remove('bi-sun');
+                        themeIcon.classList.add('bi-moon');
+                    }
+                });
+            }
+        });
+    </script>
 </body>
 </html>

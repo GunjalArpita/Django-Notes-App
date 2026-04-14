@@ -138,6 +138,6 @@ MEDIA_ROOT = BASE_DIR / 'media'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Redirect after login
-LOGIN_REDIRECT_URL = '/'
+LOGIN_REDIRECT_URL = '/notes/'
 LOGOUT_REDIRECT_URL = '/login/'
 

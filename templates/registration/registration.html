@@ -1,50 +1,112 @@
 {% extends 'base.html' %}
 
+{% block title %}Register - Notes App{% endblock %}
+
 {% block content %}
-<div class="container-fluid d-flex justify-content-center align-items-center" style="min-height: 100vh; background: linear-gradient(135deg, #fbc2eb 0%, #a6c1ee 100%);">
-    <div class="row w-100 justify-content-center">
-        <div class="col-md-6 col-lg-4">
-            <div class="card shadow-lg border-0" style="border-radius: 2rem; background: rgba(255, 255, 255, 0.95);">
-                <div class="card-body py-5">
-                    <div class="text-center mb-4">
-                        <span style="font-size:3.5em; color:#6c63ff;">📝</span>
-                        <h2 class="fw-bold mb-2" style="color:#6c63ff; letter-spacing:1px;">Welcome to Notes App</h2>
-                        <p class="text-muted" style="font-size: 0.9em;">Create an account to start organizing your notes effortlessly.</p>
-                    </div>
-                    <form method="post" autocomplete="off">
-                        {% csrf_token %}
-                        <div class="mb-3">
-                            <input type="text" name="username" class="form-control rounded-pill" placeholder="Username" required>
-                        </div>
-                        <div class="mb-3">
-                            <input type="password" name="password1" class="form-control rounded-pill" placeholder="Password" required>
-                        </div>
-                        <div class="mb-3">
-                            <input type="password" name="password2" class="form-control rounded-pill" placeholder="Confirm Password" required>
-                        </div>
-                        <button type="submit" class="btn w-100 py-2 fw-bold" style="background: linear-gradient(90deg, #6c63ff 0%, #a6c1ee 100%); color:#fff; border:none; border-radius:2rem; font-size:1.2em; box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);">Register <span style="font-size:1.2em;">➡️</span></button>
-                    </form>
-                    {% if error %}
-                        <p class="text-danger mt-3 text-center" style="border-radius:1rem;">❌ {{ error }}</p>
-                    {% endif %}
-                    {% if error %}
-                                <div class="alert alert-danger" role="alert">
-                                    {{ error }}
-                                </div>
-                            {% endif %}
-                            {% for field in form %}
-                                {% for error in field.errors %}
-                                    <div class="alert alert-danger" role="alert">
-                                        {{ error }}
-                                    </div>
+<div class="row w-100 justify-content-center d-flex align-items-center" style="min-height: 75vh;">
+    <div class="col-md-7 col-lg-5">
+        <div class="card shadow-lg border text-bg-body bg-body-tertiary" style="border-radius: 1.5rem;">
+            <div class="card-body py-5 px-4">
+                <div class="text-center mb-4">
+                    <span style="font-size:2.5em; color: var(--bs-primary);">📝</span>
+                    <h2 class="fw-bold mb-1 text-primary" style="letter-spacing:1px;">Register</h2>
+                    <p class="text-muted small">Create an account to organize your notes.</p>
+                </div>
+                
+                <form method="post" autocomplete="off">
+                    {% csrf_token %}
+                    
+                    <div class="mb-3 text-start">
+                        <label class="form-label fw-semibold">Choose a Username</label>
+                        {{ form.username }}
+                        {% if form.username.errors %}
+                            <div class="text-danger mt-1 fw-bold small">
+                                {% for error in form.username.errors %}
+                                    <i class="bi bi-exclamation-triangle-fill"></i> {{ error }}<br>
                                 {% endfor %}
-                            {% endfor %}
-                    <div class="text-center mt-4">
-                        <p>Already have an account? <a href="{% url 'login' %}" class="text-primary fw-bold">Login here</a>.</p>
+                            </div>
+                        {% endif %}
                     </div>
+                    
+                    <div class="mb-3 text-start">
+                        <label class="form-label fw-semibold">Create Password</label>
+                        {{ form.password1 }}
+                        {% if form.password1.errors %}
+                            <div class="text-danger mt-1 fw-bold small">
+                                {% for error in form.password1.errors %}
+                                    <i class="bi bi-exclamation-triangle-fill"></i> {{ error }}<br>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-4 text-start">
+                        <label class="form-label fw-semibold">Confirm Password</label>
+                        {{ form.password2 }}
+                        {% if form.password2.errors %}
+                            <div class="text-danger mt-1 fw-bold small">
+                                {% for error in form.password2.errors %}
+                                    <i class="bi bi-exclamation-triangle-fill"></i> {{ error }}<br>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="alert alert-secondary small py-2 mb-4 d-flex align-items-center gap-2" style="border-radius: 1rem;">
+                        <i class="bi bi-info-circle-fill text-primary fs-5"></i> 
+                        <span class="opacity-75" style="line-height: 1.2;"><b>Rules:</b> Must be 8+ characters long, contain letters, and not too common.</span>
+                    </div>
+
+                    {% if form.non_field_errors %}
+                        <div class="alert alert-danger rounded-3 fw-bold text-center border-danger" role="alert">
+                            {% for err in form.non_field_errors %}
+                                <i class="bi bi-x-circle-fill"></i> {{ err }}<br>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+
+                    <!-- Only show the generic error if there are no specific field warnings to avoid redundancy -->
+                    {% if error and not form.errors and not form.non_field_errors %}
+                        <div class="alert alert-danger rounded-3 fw-bold text-center border-danger" role="alert">
+                            <i class="bi bi-x-circle-fill"></i> {{ error }}
+                        </div>
+                    {% endif %}
+
+                    <button type="submit" class="btn btn-primary w-100 py-3 mt-1 fw-bold shadow-sm" style="border-radius:1rem; font-size:1.1em;">
+                        Create Account <i class="bi bi-arrow-right"></i>
+                    </button>
+                </form>
+
+                <div class="text-center mt-4">
+                    <p class="mb-0">Already have an account? <a href="{% url 'login' %}" class="text-primary text-decoration-none fw-bold">Login here</a>.</p>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        let usernameInput = document.querySelector('input[name="username"]');
+        let pass1Input = document.querySelector('input[name="password1"]');
+        let pass2Input = document.querySelector('input[name="password2"]');
+        
+        let applyStyling = (inputEl, hasError) => {
+            if(inputEl) {
+                inputEl.className += ' form-control py-2';
+                inputEl.style.borderRadius = '1rem';
+                if(hasError) inputEl.classList.add('is-invalid', 'border-danger', 'border-2');
+            }
+        };
+
+        applyStyling(usernameInput, `{{ form.username.errors|length }}` > 0);
+        if(usernameInput) usernameInput.placeholder = "Enter your username...";
+
+        applyStyling(pass1Input, `{{ form.password1.errors|length }}` > 0);
+        if(pass1Input) pass1Input.placeholder = "Strong password...";
+
+        applyStyling(pass2Input, `{{ form.password2.errors|length }}` > 0);
+        if(pass2Input) pass2Input.placeholder = "Confirm your password...";
+    });
+</script>
 {% endblock %}

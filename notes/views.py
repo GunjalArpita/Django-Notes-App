@@ -82,6 +82,9 @@ def delete_secret_note(request, note_id):
     note.delete()
     return HttpResponseRedirect(reverse('secrets_notes'))
 
+def home(request):
+    return render(request, 'notes/home.html')
+
 @login_required
 def notes_list(request):
     search_query = request.GET.get('search', '')
